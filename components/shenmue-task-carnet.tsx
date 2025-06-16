@@ -41,34 +41,31 @@ export default function ShenmueTaskCarnet() {
 
   useEffect(() => {
     setIsClient(true);
-    try {
-      const savedTasks = window.localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      } else {
+    const fetchTasks = async () => {
+      try {
+        const res = await fetch("/api/tasks");
+        if (res.ok) {
+          const data = await res.json();
+          setTasks(Array.isArray(data) ? data : DEFAULT_TASKS);
+        } else {
+          setTasks(DEFAULT_TASKS);
+        }
+      } catch (error) {
         setTasks(DEFAULT_TASKS);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error(
-        "Erreur lors du chargement des tâches depuis le localStorage:",
-        error
-      );
-      setTasks(DEFAULT_TASKS);
-    } finally {
-      setIsLoading(false);
-    }
+    };
+    fetchTasks();
   }, []);
 
   useEffect(() => {
     if (!isLoading && isClient) {
-      try {
-        window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(tasks));
-      } catch (error) {
-        console.error(
-          "Erreur lors de la sauvegarde des tâches dans le localStorage:",
-          error
-        );
-      }
+      fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tasks),
+      });
     }
   }, [tasks, isLoading, isClient]);
 
