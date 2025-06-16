@@ -22,11 +22,7 @@ interface Task {
 
 const DEFAULT_TASKS: Task[] = [
   { id: 1, text: "Trouver une alternance sérieuse", done: false },
-  { id: 2, text: "Finaliser la V1 du projet Timelog", done: false },
-  { id: 3, text: "Écouter le mix Amandine pour validation", done: false },
 ];
-
-const LOCAL_STORAGE_KEY = "shenmue-tasks";
 
 export default function ShenmueTaskCarnet() {
   const [tasks, setTasks] = useState<Task[]>([]);
